@@ -36,8 +36,7 @@ public class EventControllerTests {
     @Test
     public void createEvent() throws Exception {
 
-        Event event = Event.builder()
-                    .id(100l)
+        EventDto event = EventDto.builder()
                     .name("spring")
                     .description("rest api study")
                     .beginEnrollmentDateTime(LocalDateTime.of(2020,04,07,00,00,00))
@@ -48,8 +47,6 @@ public class EventControllerTests {
                     .maxPrice(200)
                     .limitOfEnrollment(100)
                     .location("시흥대로 53")
-                    .free(true)
-                    .offline(false)
                     .build();
 
         mockMvc.perform(post("/api/events/")
@@ -63,5 +60,34 @@ public class EventControllerTests {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE))
                 .andExpect(jsonPath("id").value(Matchers.not("100")))
                 .andExpect(jsonPath("free").value(Matchers.not(true)));
+    }
+
+    @Test
+    public void createEvent_Bad_Request() throws Exception {
+
+        Event event = Event.builder()
+                .id(100l)
+                .name("spring")
+                .description("rest api study")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020,04,07,00,00,00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020,10,07,00,00,00))
+                .beginEventDateTime(LocalDateTime.of(2020,04,07,00,00,00))
+                .endEventDateTime(LocalDateTime.of(2020,10,07,00,00,00))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("시흥대로 53")
+                .free(true)
+                .offline(false)
+                .eventStatus(EventStatus.FUBLISHED)
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
     }
 }
