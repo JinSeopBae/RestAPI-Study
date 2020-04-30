@@ -1,10 +1,12 @@
-package study.seop.restapi.events;
+package study.seop.restapi.common;
 
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import study.seop.restapi.events.Event;
+import study.seop.restapi.events.EventController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 

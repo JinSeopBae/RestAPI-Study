@@ -5,19 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.ControllerLinkBuilder;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import study.seop.restapi.common.ErrorsResource;
+import study.seop.restapi.common.EventResource;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.ControllerLinkBuilder.methodOn;
 
 @Controller
 @RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
@@ -36,12 +36,12 @@ public class EventController {
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
 
         if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -55,5 +55,9 @@ public class EventController {
         eventResource.add(selfLinkBuilder.withRel("update-event"));
         eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createUri).body(eventResource);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
