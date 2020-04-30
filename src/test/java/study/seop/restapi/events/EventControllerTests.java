@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import study.seop.restapi.common.RestDocsConfiguration;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Import(RestDocsConfiguration.class)
+@ActiveProfiles("test")
 public class EventControllerTests {
 
     @Autowired
@@ -74,7 +76,8 @@ public class EventControllerTests {
                     links(
                             linkWithRel("self").description("link to self"),
                             linkWithRel("query-event").description("link to query events"),
-                            linkWithRel("update-event").description("link to update an existing")
+                            linkWithRel("update-event").description("link to update an existing"),
+                            linkWithRel("profile").description("link to update an existing")
                     ),
                     requestHeaders(
                             headerWithName(HttpHeaders.ACCEPT).description("accept header"),
@@ -113,7 +116,8 @@ public class EventControllerTests {
                             fieldWithPath("eventStatus").description("eventStatus"),
                             fieldWithPath("_links.self.href").description("link to self"),
                             fieldWithPath("_links.query-event.href").description("link to query event list"),
-                            fieldWithPath("_links.update-event.href").description("link to update existing event")
+                            fieldWithPath("_links.update-event.href").description("link to update existing event"),
+                            fieldWithPath("_links.profile.href").description("link to update existing event")
                     )
                 ));
     }
