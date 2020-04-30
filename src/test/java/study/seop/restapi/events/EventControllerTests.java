@@ -17,7 +17,13 @@ import study.seop.restapi.common.RestDocsConfiguration;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -66,7 +72,29 @@ public class EventControllerTests {
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.query-event").exists())
                 .andExpect(jsonPath("_links.update-event").exists())
-                .andDo(document("create-event"));
+                .andDo(document("create-event",
+                    links(
+                            linkWithRel("self").description("link to self"),
+                            linkWithRel("query-event").description("link to query events"),
+                            linkWithRel("update-event").description("link to update an existing")
+                    ),
+                    requestHeaders(
+                            headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                            headerWithName(HttpHeaders.CONTENT_TYPE).description("content type header")
+                    ),
+                    requestFields(
+                            fieldWithPath("name").description("Name of new event"),
+                            fieldWithPath("description").description("description of new event"),
+                            fieldWithPath("beginEnrollmentDateTime").description("beginEnrollmentDateTime of new event"),
+                            fieldWithPath("closeEnrollmentDateTime").description("closeEnrollmentDateTime of new event"),
+                            fieldWithPath("beginEventDateTime").description("beginEventDateTime of new event"),
+                            fieldWithPath("endEventDateTime").description("endEventDateTime of new event"),
+                            fieldWithPath("location").description("location of new event"),
+                            fieldWithPath("basePrice").description("basePrice of new event"),
+                            fieldWithPath("maxPrice").description("maxPrice of new event"),
+                            fieldWithPath("limitOfEnrollment").description("limitOfEnrollment of new event")
+                    )
+                ));
     }
 
     @Test
