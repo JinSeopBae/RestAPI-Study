@@ -1,7 +1,6 @@
 package study.seop.restapi.index;
 
 
-import lombok.var;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

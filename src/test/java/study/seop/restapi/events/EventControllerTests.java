@@ -197,7 +197,7 @@ public class EventControllerTests {
         // Given
         IntStream.range(0,30).forEach(this::generateEvent);
 
-        // When
+        // When // Then
         this.mockMvc.perform(get("/api/events")
                     .param("page", "1")
                     .param("size", "10")
@@ -211,12 +211,36 @@ public class EventControllerTests {
                 .andDo(document("query-events"));
     }
 
-    private void generateEvent(int i) {
+    @Test
+    public void getEvent() throws Exception {
+        // Given
+        Event event = this.generateEvent(100);
+        this.mockMvc.perform(get("/api/events/{id}",event.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"));
+
+    }
+
+    @Test
+    public void getEvent404() throws Exception {
+        // Given
+        Event event = this.generateEvent(100);
+        this.mockMvc.perform(get("/api/events/3220",event.getId()))
+                .andExpect(status().isNotFound());
+
+
+    }
+
+    private Event generateEvent(int i) {
         Event event = Event.builder()
                 .name("event " + i)
                 .description("test event")
                 .build();
 
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
     }
 }
