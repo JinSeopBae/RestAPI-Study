@@ -3,6 +3,7 @@ package study.seop.restapi.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,6 +46,9 @@ public class EventControllerTests {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Test
     public void createEvent() throws Exception {
@@ -235,10 +239,86 @@ public class EventControllerTests {
 
     }
 
+    @Test
+    public void updateEvent() throws Exception {
+        // Given
+
+        Event event = this.generateEvent(200);
+        String eventName = "Updated Event";
+        EventDto eventDto = this.modelMapper.map(event,EventDto.class);
+        eventDto.setName(eventName);
+
+        // When & Then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("name").value(eventName))
+            .andExpect(jsonPath("_links.self").exists());
+    }
+
+    @Test
+    public void updateEvent400emtpy() throws Exception {
+        // Given
+
+        Event event = this.generateEvent(200);
+        EventDto eventDto = new EventDto();
+
+        // When & Then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateEvent400wrong() throws Exception {
+        // Given
+
+        Event event = this.generateEvent(200);
+        EventDto eventDto = modelMapper.map(event, EventDto.class);
+        eventDto.setBasePrice(20000);
+        eventDto.setMaxPrice(1000);
+
+        // When & Then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateEvent404() throws Exception {
+        // Given
+        Event event = this.generateEvent(200);
+        EventDto eventDto = modelMapper.map(event, EventDto.class);
+
+        // When & Then
+        this.mockMvc.perform(put("/api/events/123123123")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
     private Event generateEvent(int i) {
         Event event = Event.builder()
-                .name("event " + i)
-                .description("test event")
+                .name("event" + i)
+                .description("rest api study")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020,04,07,00,00,00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020,10,07,00,00,00))
+                .beginEventDateTime(LocalDateTime.of(2020,04,07,00,00,00))
+                .endEventDateTime(LocalDateTime.of(2020,10,07,00,00,00))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("....")
+                .free(false)
+                .offline(true)
+                .eventStatus(EventStatus.DRAFT)
                 .build();
 
         return this.eventRepository.save(event);
