@@ -10,7 +10,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import study.seop.restapi.accounts.Account;
 import study.seop.restapi.accounts.AccountService;
-import study.seop.restapi.accounts.AccuntRole;
+import study.seop.restapi.accounts.AccountRole;
 
 import java.util.Set;
 
@@ -37,9 +37,9 @@ public class AppConfig {
             @Override
             public void run(ApplicationArguments args) throws Exception {
                 Account account = Account.builder()
-                        .email("edenhazard@gmail.com")
+                        .email("edenhazard5870@gmail.com")
                         .password("1234")
-                        .roles(Set.of(AccuntRole.ADMIN, AccuntRole.USER))
+                        .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
                 accountService.saveAccount(account);
             }

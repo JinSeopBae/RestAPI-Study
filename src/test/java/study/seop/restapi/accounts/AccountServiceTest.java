@@ -45,7 +45,7 @@ public class AccountServiceTest {
         Account account = Account.builder()
                     .email(username)
                     .password(password)
-                    .roles(Set.of(AccuntRole.ADMIN,AccuntRole.USER))
+                    .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                     .build();
 
         accountService.saveAccount(account);

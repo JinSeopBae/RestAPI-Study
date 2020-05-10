@@ -1,6 +1,6 @@
 package study.seop.restapi.accounts;
 
-public enum AccuntRole {
+public enum AccountRole {
 
     ADMIN, USER
 }
